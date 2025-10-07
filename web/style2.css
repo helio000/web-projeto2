@@ -1,0 +1,74 @@
+body {
+    background-image: url('fotos/fundoForm2.png'); /* Adiciona a imagem de fundo */
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%; /* Certifica-se que o body ocupe toda a altura da tela */
+    margin: 0;
+}
+
+.Informações {
+    text-align: center;
+    color: #ec2e2e;
+    font-size: 60px;
+}
+
+
+fieldset {
+    color: white;
+    
+    width: 25%;
+    border-radius: 20px;
+}
+.voltar {
+    background-color: rgb(250, 64, 64);
+    border: 30px;
+    padding: 20px;
+    width: 10%;
+    border-radius: 20px;
+    border-color: rgb(207, 47, 47);
+    color: rgb(0, 0, 0);
+    font-size: 20px;
+    cursor: pointer;
+    margin-top: 300px;
+}
+.voltar, .cadastre-se {
+    background-color: rgb(250, 64, 64);
+    border: none;           /* remove a borda desnecessária */
+    padding: 15px 30px;     /* aumenta o tamanho do botão */
+    width: auto;            /* ajusta automaticamente ao conteúdo */
+    border-radius: 20px;
+    color: black;
+    font-size: 20px;
+    cursor: pointer;
+    display: block;         /* faz o botão ocupar uma linha inteira */
+    margin: 15px auto 0 auto; /* centraliza e diminui a distância entre eles */
+}
+
+.voltar:hover, .cadastre-se:hover {
+    background-color: rgb(255, 135, 135);
+}
+
+
+.aluno {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 2px solid white;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    text-align: column;
+    width: 80%;
+    margin-left: column;
+    margin-right: auto;
+    color: white;
+}
+
+@media (max-width: 600px) {
+    .Informações {
+        text-align: center;
+        color: #ec2e2e;
+        font-size: 30px;
+    }
+    body {
+        height: 1000px;
+    }
+}

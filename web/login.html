@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style2.css">
+<title>Login Aluno</title>
+</head>
+<body style="background-image: url('fotos/fundoForm2.png'); background-size: cover; margin:0;">
+<h5 class="Informações">Login de Aluno</h5>
+
+<center>
+    <div id="login-form" style="margin-top: 50px;">
+        <input type="text" id="login-nome" placeholder="Nome Completo" style="padding: 10px; width: 200px; border-radius: 10px; margin-bottom: 10px;"><br>
+        <input type="email" id="login-email" placeholder="E-mail" style="padding: 10px; width: 200px; border-radius: 10px; margin-bottom: 10px;"><br>
+        <button id="entrar" class="voltar">Entrar</button>
+    </div>
+
+    <div id="mensagem-login" style="margin-top: 20px; color: white; font-size: 18px;"></div>
+</center>
+
+<script>
+document.getElementById("entrar").addEventListener("click", async () => {
+    const nome = document.getElementById("login-nome").value.trim();
+    const email = document.getElementById("login-email").value.trim().toLowerCase();
+    const mensagem = document.getElementById("mensagem-login");
+
+    if (!nome || !email) {
+        mensagem.textContent = "Preencha nome e e-mail!";
+        mensagem.style.color = "rgb(255, 100, 100)";
+        return;
+    }
+
+    try {
+        // Tenta logar
+        let response = await fetch('http://localhost:3100/alunos/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome, email })
+        });
+
+        let data = await response.json();
+
+        if (!response.ok) {
+            // Cria aluno automaticamente se não existir
+            const criarResponse = await fetch('http://localhost:3100/alunos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nome,
+                    email,
+                    telefone: '000000000',       // placeholder válido
+                    datanasc: '2000-01-01',     // data válida
+                    arteMarcial: 'Não informado'
+                })
+            });
+
+            const criarData = await criarResponse.json();
+
+            if (criarResponse.ok) {
+                localStorage.setItem("alunoLogado", JSON.stringify(criarData));
+                mensagem.textContent = "Aluno criado e logado com sucesso!";
+                mensagem.style.color = "rgb(100, 255, 100)";
+                setTimeout(() => {
+                    window.location.href = "sala.html";
+                }, 1500);
+                return;
+            } else {
+                mensagem.textContent = criarData.error || "Erro ao criar aluno.";
+                mensagem.style.color = "rgb(255, 100, 100)";
+                return;
+            }
+        }
+
+        // Se já existir, loga normalmente
+        localStorage.setItem("alunoLogado", JSON.stringify(data.aluno));
+        mensagem.textContent = data.message;
+        mensagem.style.color = "rgb(100, 255, 100)";
+        setTimeout(() => {
+            window.location.href = "sala.html";
+        }, 1500);
+
+    } catch (err) {
+        mensagem.textContent = "Erro na conexão com a API";
+        mensagem.style.color = "rgb(255, 100, 100)";
+    }
+});
+</script>
+
+</body>
+</html>
