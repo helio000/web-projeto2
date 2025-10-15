@@ -73,7 +73,7 @@ body {
     <fieldset id="lista-sala"></fieldset>
 </div>
 
-<button id="voltar-home">Voltar para Home</button>
+<button id="voltar-home">Voltar para o inicio</button>
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let alunos = [];
 
     document.getElementById("voltar-home").addEventListener("click", () => {
-        window.location.href = "home.html";
+        window.location.href = "index.html";
     });
 
     async function carregarAlunos() {
