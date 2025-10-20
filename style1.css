@@ -1,92 +1,71 @@
 body {
-    font-family: Arial, sans-serif;
-    color: white;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;  
-    align-items: center;      
-    min-height: 100vh;        
-    background-image: url('fundoForm2.png');
-    background-size: cover;
-    background-position: center;
+  font-family: Arial, sans-serif;
+  color: white;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-image: url('fundoForm2.png');
+  background-size: cover;
+  background-position: center;
 }
-
-
-.Cadastro {
-    text-align: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
 
 .box-form {
-    width: 100%;
-    max-width: 400px;  
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 400px;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
 }
 
+.Cadastro {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: red;
+}
 
 .input-group {
-    margin-bottom: 15px;
+  margin-bottom: 15px;
+  text-align: left;
 }
 
 .input-group label {
-    display: block;
-    margin-bottom: 5px;
+  display: block;
+  margin-bottom: 5px;
 }
 
 .input-group input,
 .input-group select {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
 }
 
 .input-group input:focus,
 .input-group select:focus {
-    outline: none;
-    border: 2px solid red;
+  outline: none;
+  border: 2px solid red;
 }
 
 .enviar-button {
-    width: 100%;
-    padding: 10px;
-    background-color: red;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
+  width: 100%;
+  padding: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
 .enviar-button:hover {
-    background-color: darkred;
+  background-color: darkred;
 }
 
-@media (max-width: 600px) {
-    .box-form {
-        max-width: 90%;  
-        padding: 15px;
-
-    }
-
-    .Cadastro {
-        font-size: 24px;
-        margin-top: 20px;
-
-        margin-left: -100px;
-    }
-
-    .Cadastro {
-        font-size: 20px;
-        margin-bottom: 500px;
-        margin-left: 0px;
-
-    }
-}
