@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala de Professores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: white;
+            background-image: url('fotos/fundoForm2.png');
+            background-size: cover;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h2, h3 { text-shadow: 1px 1px 5px black; }
+        #filtros, #lista-alunos { width: 90%; max-width: 800px; }
+        #filtros { display: flex; gap: 10px; margin: 20px 0; justify-content: center; }
+        #filtros button { padding: 8px 15px; border: none; border-radius: 5px; background-color: #28a745; cursor: pointer; color: white; }
+        #filtros button:hover { background-color: #218838; }
+        .professor, .aluno { background-color: rgba(0,0,0,0.7); padding: 15px; border-radius: 10px; margin-bottom: 10px; }
+        .aluno { margin-left: 20px; background-color: rgba(0,0,50,0.6); }
+        .notas-btn { padding: 5px 10px; border: none; border-radius: 5px; background-color: #007bff; cursor: pointer; color: white; margin-top: 5px; margin-right: 5px; }
+        .notas-btn:hover { background-color: #0056b3; }
+        #voltar-home { margin-top: auto; margin-bottom: 20px; padding: 10px 20px; border-radius: 5px; border: none; background-color: red; cursor: pointer; }
+        #voltar-home:hover { background-color: darkred; }
+
+        .notas-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+            background-color: rgba(255,255,255,0.1);
+            padding: 8px;
+            border-radius: 5px;
+        }
+        .nota-item {
+            background-color: rgba(0,0,0,0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Sala de Professores</h2>
+<div id="info-professor"></div>
+<div id="filtros">
+    <button data-arte="">Todos</button>
+    <button data-arte="capoeira">Capoeira</button>
+    <button data-arte="jiu-jitsu">Jiu-Jitsu</button>
+    <button data-arte="karate">Karatê</button>
+</div>
+<div id="lista-alunos"></div>
+
+<button id="voltar-home">Voltar para tela inicial</button>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const listaAlunos = document.getElementById("lista-alunos");
+    const infoProfessor = document.getElementById("info-professor");
+    const botoes = document.querySelectorAll("#filtros button");
+
+    document.getElementById("voltar-home").addEventListener("click", () => {
+        window.location.href = "home.html";
+    });
+
+    let professorLogado = JSON.parse(localStorage.getItem("professorLogado"));
+    let alunos = [];
+
+    if (!professorLogado) {
+        alert("Você precisa estar logado como professor!");
+        window.location.href = "LoginProfessor.html";
+        return;
+    }
+
+    // Mostra info do professor logado
+    infoProfessor.innerHTML = `
+        <div class="professor">
+            <h3>Bem-vindo, Prof. ${professorLogado.nome}</h3>
+            <p><strong>Arte Marcial:</strong> ${professorLogado.arteMarcial || '-'}</p>
+        </div>
+    `;
+
+    // Busca alunos
+    async function carregarAlunos() {
+        try {
+            const res = await fetch('http://localhost:3100/alunos');
+            alunos = await res.json();
+            atualizarLista(professorLogado.arteMarcial); // filtra por arte do professor
+        } catch (err) {
+            console.error("Erro ao carregar alunos:", err);
+        }
+    }
+
+    function atualizarLista(filtro = "") {
+        listaAlunos.innerHTML = "";
+        const alunosFiltrados = alunos.filter(a => !filtro || a.arteMarcial === filtro);
+
+        alunosFiltrados.forEach(aluno => {
+            const divAlu = document.createElement("div");
+            divAlu.classList.add("aluno");
+
+            const notaTecnica = aluno.notaTecnica ?? "";
+            const disciplina = aluno.notaDisciplina ?? "";
+            const frequencia = aluno.frequencia ?? "";
+
+            const media = (notaTecnica && disciplina) ? ((notaTecnica + disciplina)/2).toFixed(1) : "";
+            const aprovado = media ? (media >= 6 && frequencia >= 75) : "";
+
+            divAlu.innerHTML = `
+                <p><strong>Aluno:</strong> ${aluno.nome} (RA: ${aluno.RA})</p>
+                <p><strong>Arte Marcial:</strong> ${aluno.arteMarcial}</p>
+                <div class="notas-container">
+                    <div class="nota-item"><strong>Técnica:</strong> ${notaTecnica}</div>
+                    <div class="nota-item"><strong>Disciplina:</strong> ${disciplina}</div>
+                    <div class="nota-item"><strong>Frequência:</strong> ${frequencia}%</div>
+                    ${aprovado !== "" ? `<div class="nota-item"><strong>Situação:</strong> ${aprovado ? "Aprovado ✅" : "Reprovado ❌"}</div>` : ""}
+                </div>
+                <div>
+                    ${(!notaTecnica && !disciplina) 
+                        ? `<button class="notas-btn dar-nota">Dar Nota</button>` 
+                        : `<button class="notas-btn alterar-nota">Alterar Nota</button>`}
+                </div>
+            `;
+            listaAlunos.appendChild(divAlu);
+
+            const darBtn = divAlu.querySelector(".dar-nota");
+            const alterarBtn = divAlu.querySelector(".alterar-nota");
+
+            if (darBtn) darBtn.addEventListener("click", () => abrirNotas(aluno, divAlu));
+            if (alterarBtn) alterarBtn.addEventListener("click", () => abrirNotas(aluno, divAlu));
+        });
+    }
+
+    async function abrirNotas(aluno, divAlu) {
+        const input = prompt(
+            `Dar notas para ${aluno.nome} (formato: notaTecnica,disciplina,frequencia):`, 
+            `${aluno.notaTecnica || 0},${aluno.notaDisciplina || 0},${aluno.frequencia || 0}`
+        );
+        if (!input) return;
+
+        const [notaTecnica, notaDisciplina, frequencia] = input.split(',').map(Number);
+
+        if (
+            isNaN(notaTecnica) || isNaN(notaDisciplina) || isNaN(frequencia) ||
+            notaTecnica < 0 || notaTecnica > 10 ||
+            notaDisciplina < 0 || notaDisciplina > 10 ||
+            frequencia < 0 || frequencia > 100
+        ) {
+            alert("Notas inválidas! Técnica e Disciplina: 0-10, Frequência: 0-100");
+            return;
+        }
+
+        try {
+            const res = await fetch(`http://localhost:3100/alunos/${aluno.id}/notas`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ notaTecnica, notaDisciplina, frequencia })
+            });
+
+            const resultado = await res.json();
+            if (!res.ok) {
+                alert("Erro ao atualizar notas: " + (resultado.error || "Erro desconhecido"));
+                return;
+            }
+
+            aluno.notaTecnica = resultado.notaTecnica;
+            aluno.notaDisciplina = resultado.notaDisciplina;
+            aluno.frequencia = resultado.frequencia;
+
+            const media = ((resultado.notaTecnica + resultado.notaDisciplina)/2).toFixed(1);
+            const aprovado = media >= 6 && resultado.frequencia >= 75;
+
+            divAlu.querySelector(".notas-container").innerHTML = `
+                <div class="nota-item"><strong>Técnica:</strong> ${resultado.notaTecnica}</div>
+                <div class="nota-item"><strong>Disciplina:</strong> ${resultado.notaDisciplina}</div>
+                <div class="nota-item"><strong>Frequência:</strong> ${resultado.frequencia}%</div>
+                <div class="nota-item"><strong>Situação:</strong> ${aprovado ? 'Aprovado ✅' : 'Reprovado ❌'}</div>
+            `;
+
+            // Atualiza os botões após inserir nota
+            atualizarLista(professorLogado.arteMarcial);
+
+            alert("Notas atualizadas com sucesso!");
+        } catch (err) {
+            console.error("Erro no fetch:", err);
+            alert("Erro ao atualizar notas! Veja o console para detalhes.");
+        }
+    }
+
+    botoes.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const arte = btn.getAttribute("data-arte");
+            atualizarLista(arte);
+        });
+    });
+
+    await carregarAlunos();
+});
+</script>
+
+</body>
+</html>
