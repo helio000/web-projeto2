@@ -40,7 +40,7 @@
         }
         #filtros button.ativo {
             background-color: #ff0707;
-            color: rgb(255, 255, 255);
+            color: white;
             transform: scale(1.05);
         }
         .professor, .aluno {
@@ -74,7 +74,6 @@
             cursor: pointer;
         }
         #voltar-home:hover { background-color: darkred; }
-
         .notas-container {
             display: flex;
             flex-wrap: wrap;
@@ -132,30 +131,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
     `;
 
-    // Busca alunos
-    async function carregarAlunos() {
-        try {
-            const res = await fetch('http://localhost:3100/alunos');
-            alunos = await res.json();
-            atualizarLista(professorLogado.arteMarcial); // filtra por arte do professor
-        } catch (err) {
-            console.error("Erro ao carregar alunos:", err);
-        }
-    }
-
-    // Normaliza texto para comparação (sem acento e tudo minúsculo)
+    // Normaliza texto para comparar sem acentos
     function normalizarTexto(txt) {
         return txt
             ? txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
             : "";
     }
 
+    // Atualiza lista de alunos filtrando pela arte marcial
     function atualizarLista(filtro = "") {
         listaAlunos.innerHTML = "";
 
-        const alunosFiltrados = alunos.filter(a => 
-            !filtro || (a.arteMarcial && normalizarTexto(a.arteMarcial) === normalizarTexto(filtro))
-        );
+        const alunosFiltrados = alunos.filter(a => {
+            const arteAluno = normalizarTexto(a.arteMarcial || "");
+            const arteFiltro = normalizarTexto(filtro || "");
+            return arteFiltro === "" || arteAluno.includes(arteFiltro);
+        });
+
+        if (alunosFiltrados.length === 0) {
+            listaAlunos.innerHTML = `<p>Nenhum aluno encontrado para "${filtro || "todas as artes"}".</p>`;
+            return;
+        }
 
         alunosFiltrados.forEach(aluno => {
             const divAlu = document.createElement("div");
@@ -166,7 +162,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const frequencia = aluno.frequencia ?? "";
 
             const media = (notaTecnica && disciplina)
-                ? ((notaTecnica + disciplina) / 2).toFixed(1)
+                ? ((Number(notaTecnica) + Number(disciplina)) / 2).toFixed(1)
                 : "";
             const aprovado = media ? (media >= 6 && frequencia >= 75) : "";
 
@@ -178,7 +174,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <div class="nota-item"><strong>Disciplina:</strong> ${disciplina}</div>
                     <div class="nota-item"><strong>Frequência:</strong> ${frequencia}%</div>
                     ${aprovado !== "" 
-                        ? `<div class="nota-item"><strong>Situação:</strong> ${aprovado ? "Aprovado ✅" : "Reprovado ❌"}</div>`
+                        ? `<div class="nota-item"><strong>Situação:</strong> ${aprovado ? "Aprovado ✅" : "Reprovado ❌"}</div>` 
                         : ""}
                 </div>
                 <div>
@@ -192,12 +188,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             const darBtn = divAlu.querySelector(".dar-nota");
             const alterarBtn = divAlu.querySelector(".alterar-nota");
 
-            if (darBtn) darBtn.addEventListener("click", () => abrirNotas(aluno, divAlu));
-            if (alterarBtn) alterarBtn.addEventListener("click", () => abrirNotas(aluno, divAlu));
+            if (darBtn) darBtn.addEventListener("click", () => abrirNotas(aluno));
+            if (alterarBtn) alterarBtn.addEventListener("click", () => abrirNotas(aluno));
         });
     }
 
-    async function abrirNotas(aluno, divAlu) {
+    async function abrirNotas(aluno) {
         const input = prompt(
             `Dar notas para ${aluno.nome} (formato: notaTecnica,disciplina,frequencia):`,
             `${aluno.notaTecnica || 0},${aluno.notaDisciplina || 0},${aluno.frequencia || 0}`
@@ -250,6 +246,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             atualizarLista(arte);
         });
     });
+
+    // Carrega alunos do backend
+    async function carregarAlunos() {
+        try {
+            const res = await fetch('http://localhost:3100/alunos');
+            alunos = await res.json();
+            console.log("Alunos carregados:", alunos);
+            atualizarLista(professorLogado.arteMarcial);
+        } catch (err) {
+            console.error("Erro ao carregar alunos:", err);
+        }
+    }
 
     await carregarAlunos();
 });
