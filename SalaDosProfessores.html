@@ -18,14 +18,61 @@
         }
         h2, h3 { text-shadow: 1px 1px 5px black; }
         #filtros, #lista-alunos { width: 90%; max-width: 800px; }
-        #filtros { display: flex; gap: 10px; margin: 20px 0; justify-content: center; }
-        #filtros button { padding: 8px 15px; border: none; border-radius: 5px; background-color: #28a745; cursor: pointer; color: white; }
-        #filtros button:hover { background-color: #218838; }
-        .professor, .aluno { background-color: rgba(0,0,0,0.7); padding: 15px; border-radius: 10px; margin-bottom: 10px; }
-        .aluno { margin-left: 20px; background-color: rgba(0,0,50,0.6); }
-        .notas-btn { padding: 5px 10px; border: none; border-radius: 5px; background-color: #007bff; cursor: pointer; color: white; margin-top: 5px; margin-right: 5px; }
+        #filtros {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        #filtros button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            cursor: pointer;
+            color: white;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        #filtros button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+        #filtros button.ativo {
+            background-color: #ff0707;
+            color: rgb(255, 255, 255);
+            transform: scale(1.05);
+        }
+        .professor, .aluno {
+            background-color: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .aluno {
+            margin-left: 20px;
+            background-color: rgba(0,0,50,0.6);
+        }
+        .notas-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            cursor: pointer;
+            color: white;
+            margin-top: 5px;
+            margin-right: 5px;
+        }
         .notas-btn:hover { background-color: #0056b3; }
-        #voltar-home { margin-top: auto; margin-bottom: 20px; padding: 10px 20px; border-radius: 5px; border: none; background-color: red; cursor: pointer; }
+        #voltar-home {
+            margin-top: auto;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: red;
+            cursor: pointer;
+        }
         #voltar-home:hover { background-color: darkred; }
 
         .notas-container {
@@ -65,7 +112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const botoes = document.querySelectorAll("#filtros button");
 
     document.getElementById("voltar-home").addEventListener("click", () => {
-        window.location.href = "index.html";
+        window.location.href = "home.html";
     });
 
     let professorLogado = JSON.parse(localStorage.getItem("professorLogado"));
@@ -96,9 +143,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Normaliza texto para comparação (sem acento e tudo minúsculo)
+    function normalizarTexto(txt) {
+        return txt
+            ? txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            : "";
+    }
+
     function atualizarLista(filtro = "") {
         listaAlunos.innerHTML = "";
-        const alunosFiltrados = alunos.filter(a => !filtro || a.arteMarcial === filtro);
+
+        const alunosFiltrados = alunos.filter(a => 
+            !filtro || (a.arteMarcial && normalizarTexto(a.arteMarcial) === normalizarTexto(filtro))
+        );
 
         alunosFiltrados.forEach(aluno => {
             const divAlu = document.createElement("div");
@@ -108,7 +165,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             const disciplina = aluno.notaDisciplina ?? "";
             const frequencia = aluno.frequencia ?? "";
 
-            const media = (notaTecnica && disciplina) ? ((notaTecnica + disciplina)/2).toFixed(1) : "";
+            const media = (notaTecnica && disciplina)
+                ? ((notaTecnica + disciplina) / 2).toFixed(1)
+                : "";
             const aprovado = media ? (media >= 6 && frequencia >= 75) : "";
 
             divAlu.innerHTML = `
@@ -118,11 +177,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <div class="nota-item"><strong>Técnica:</strong> ${notaTecnica}</div>
                     <div class="nota-item"><strong>Disciplina:</strong> ${disciplina}</div>
                     <div class="nota-item"><strong>Frequência:</strong> ${frequencia}%</div>
-                    ${aprovado !== "" ? `<div class="nota-item"><strong>Situação:</strong> ${aprovado ? "Aprovado ✅" : "Reprovado ❌"}</div>` : ""}
+                    ${aprovado !== "" 
+                        ? `<div class="nota-item"><strong>Situação:</strong> ${aprovado ? "Aprovado ✅" : "Reprovado ❌"}</div>`
+                        : ""}
                 </div>
                 <div>
-                    ${(!notaTecnica && !disciplina) 
-                        ? `<button class="notas-btn dar-nota">Dar Nota</button>` 
+                    ${(!notaTecnica && !disciplina)
+                        ? `<button class="notas-btn dar-nota">Dar Nota</button>`
                         : `<button class="notas-btn alterar-nota">Alterar Nota</button>`}
                 </div>
             `;
@@ -138,7 +199,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function abrirNotas(aluno, divAlu) {
         const input = prompt(
-            `Dar notas para ${aluno.nome} (formato: notaTecnica,disciplina,frequencia):`, 
+            `Dar notas para ${aluno.nome} (formato: notaTecnica,disciplina,frequencia):`,
             `${aluno.notaTecnica || 0},${aluno.notaDisciplina || 0},${aluno.frequencia || 0}`
         );
         if (!input) return;
@@ -172,19 +233,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             aluno.notaDisciplina = resultado.notaDisciplina;
             aluno.frequencia = resultado.frequencia;
 
-            const media = ((resultado.notaTecnica + resultado.notaDisciplina)/2).toFixed(1);
-            const aprovado = media >= 6 && resultado.frequencia >= 75;
-
-            divAlu.querySelector(".notas-container").innerHTML = `
-                <div class="nota-item"><strong>Técnica:</strong> ${resultado.notaTecnica}</div>
-                <div class="nota-item"><strong>Disciplina:</strong> ${resultado.notaDisciplina}</div>
-                <div class="nota-item"><strong>Frequência:</strong> ${resultado.frequencia}%</div>
-                <div class="nota-item"><strong>Situação:</strong> ${aprovado ? 'Aprovado ✅' : 'Reprovado ❌'}</div>
-            `;
-
-            // Atualiza os botões após inserir nota
             atualizarLista(professorLogado.arteMarcial);
-
             alert("Notas atualizadas com sucesso!");
         } catch (err) {
             console.error("Erro no fetch:", err);
@@ -192,8 +241,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Filtro com destaque no botão ativo
     botoes.forEach(btn => {
         btn.addEventListener("click", () => {
+            botoes.forEach(b => b.classList.remove("ativo"));
+            btn.classList.add("ativo");
             const arte = btn.getAttribute("data-arte");
             atualizarLista(arte);
         });
@@ -205,4 +257,3 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 </body>
 </html>
-
