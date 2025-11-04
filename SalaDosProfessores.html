@@ -40,7 +40,7 @@
         }
         #filtros button.ativo {
             background-color: #ff0707;
-            color: white;
+            color: rgb(255, 255, 255);
             transform: scale(1.05);
         }
         .professor, .aluno {
@@ -64,16 +64,25 @@
             margin-right: 5px;
         }
         .notas-btn:hover { background-color: #0056b3; }
-        #voltar-home {
-            margin-top: auto;
-            margin-bottom: 20px;
+        #voltar-home, #abrir-planejamento {
+            margin-top: 1rem;
+            margin-bottom: 10px;
             padding: 10px 20px;
             border-radius: 5px;
             border: none;
-            background-color: red;
             cursor: pointer;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        #voltar-home {
+            background-color: red;
+        }
+        #abrir-planejamento {
+            background-color: #ff8c00;
         }
         #voltar-home:hover { background-color: darkred; }
+        #abrir-planejamento:hover { background-color: #e07b00; }
+
         .notas-container {
             display: flex;
             flex-wrap: wrap;
@@ -94,6 +103,10 @@
 
 <h2>Sala de Professores</h2>
 <div id="info-professor"></div>
+
+<!-- Botão para abrir a página de planejamento -->
+<button id="abrir-planejamento">📅 Ver Planejamento de Aulas</button>
+
 <div id="filtros">
     <button data-arte="">Todos</button>
     <button data-arte="capoeira">Capoeira</button>
@@ -110,8 +123,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const infoProfessor = document.getElementById("info-professor");
     const botoes = document.querySelectorAll("#filtros button");
 
+    // Botão para voltar
     document.getElementById("voltar-home").addEventListener("click", () => {
         window.location.href = "home.html";
+    });
+
+    // Botão para acessar o planejamento
+    document.getElementById("abrir-planejamento").addEventListener("click", () => {
+        window.location.href = "planejamento.html";
     });
 
     let professorLogado = JSON.parse(localStorage.getItem("professorLogado"));
@@ -123,7 +142,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // Mostra info do professor logado
     infoProfessor.innerHTML = `
         <div class="professor">
             <h3>Bem-vindo, Prof. ${professorLogado.nome}</h3>
@@ -131,27 +149,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
     `;
 
-    // Normaliza texto para comparar sem acentos
+    async function carregarAlunos() {
+        try {
+            const res = await fetch('http://localhost:3100/alunos');
+            alunos = await res.json();
+            atualizarLista(professorLogado.arteMarcial);
+        } catch (err) {
+            console.error("Erro ao carregar alunos:", err);
+        }
+    }
+
     function normalizarTexto(txt) {
         return txt
             ? txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
             : "";
     }
 
-    // Atualiza lista de alunos filtrando pela arte marcial
     function atualizarLista(filtro = "") {
         listaAlunos.innerHTML = "";
 
-        const alunosFiltrados = alunos.filter(a => {
-            const arteAluno = normalizarTexto(a.arteMarcial || "");
-            const arteFiltro = normalizarTexto(filtro || "");
-            return arteFiltro === "" || arteAluno.includes(arteFiltro);
-        });
-
-        if (alunosFiltrados.length === 0) {
-            listaAlunos.innerHTML = `<p>Nenhum aluno encontrado para "${filtro || "todas as artes"}".</p>`;
-            return;
-        }
+        const alunosFiltrados = alunos.filter(a => 
+            !filtro || (a.arteMarcial && normalizarTexto(a.arteMarcial) === normalizarTexto(filtro))
+        );
 
         alunosFiltrados.forEach(aluno => {
             const divAlu = document.createElement("div");
@@ -162,7 +181,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const frequencia = aluno.frequencia ?? "";
 
             const media = (notaTecnica && disciplina)
-                ? ((Number(notaTecnica) + Number(disciplina)) / 2).toFixed(1)
+                ? ((notaTecnica + disciplina) / 2).toFixed(1)
                 : "";
             const aprovado = media ? (media >= 6 && frequencia >= 75) : "";
 
@@ -174,7 +193,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <div class="nota-item"><strong>Disciplina:</strong> ${disciplina}</div>
                     <div class="nota-item"><strong>Frequência:</strong> ${frequencia}%</div>
                     ${aprovado !== "" 
-                        ? `<div class="nota-item"><strong>Situação:</strong> ${aprovado ? "Aprovado ✅" : "Reprovado ❌"}</div>` 
+                        ? `<div class="nota-item"><strong>Situação:</strong> ${aprovado ? "Aprovado ✅" : "Reprovado ❌"}</div>`
                         : ""}
                 </div>
                 <div>
@@ -188,12 +207,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             const darBtn = divAlu.querySelector(".dar-nota");
             const alterarBtn = divAlu.querySelector(".alterar-nota");
 
-            if (darBtn) darBtn.addEventListener("click", () => abrirNotas(aluno));
-            if (alterarBtn) alterarBtn.addEventListener("click", () => abrirNotas(aluno));
+            if (darBtn) darBtn.addEventListener("click", () => abrirNotas(aluno, divAlu));
+            if (alterarBtn) alterarBtn.addEventListener("click", () => abrirNotas(aluno, divAlu));
         });
     }
 
-    async function abrirNotas(aluno) {
+    async function abrirNotas(aluno, divAlu) {
         const input = prompt(
             `Dar notas para ${aluno.nome} (formato: notaTecnica,disciplina,frequencia):`,
             `${aluno.notaTecnica || 0},${aluno.notaDisciplina || 0},${aluno.frequencia || 0}`
@@ -237,7 +256,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Filtro com destaque no botão ativo
     botoes.forEach(btn => {
         btn.addEventListener("click", () => {
             botoes.forEach(b => b.classList.remove("ativo"));
@@ -246,18 +264,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             atualizarLista(arte);
         });
     });
-
-    // Carrega alunos do backend
-    async function carregarAlunos() {
-        try {
-            const res = await fetch('http://localhost:3100/alunos');
-            alunos = await res.json();
-            console.log("Alunos carregados:", alunos);
-            atualizarLista(professorLogado.arteMarcial);
-        } catch (err) {
-            console.error("Erro ao carregar alunos:", err);
-        }
-    }
 
     await carregarAlunos();
 });
