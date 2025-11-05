@@ -5,53 +5,143 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hangetsu Uzumaki</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- Ícones -->
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      display: none; /* removido do topo, já que os botões vão para o centro */
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      background-image: url('fotos/fundo-principal.png');
+      background-size: cover;
+      background-position: center;
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 6px rgb(255, 255, 255);
+    }
+
+    .button {
+      background-color: #ff0000;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 25px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .button:hover {
+      background-color: #ff0000;
+      transform: scale(1.05);
+    }
+
+    .button-red {
+      background-color: #ff0000;
+      color: white;
+    }
+
+    .button-red:hover {
+      background-color: #cc0000;
+    }
+
+    /* Novos botões */
+    .extra-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    .extra-buttons a {
+      text-decoration: none;
+    }
+
+    .extra-buttons .btn1 {
+      width: 290px;
+      background-color: #ff0000;
+      color: white;
+    }
+
+    .extra-buttons .btn2 {
+      width: 290px;
+      background-color: #ff0000;
+      color: white;
+    }
+
+    .extra-buttons .btn3 {
+      width: 290px;
+      background-color: #ff0000;
+      color: white;
+    }
+
+    .extra-buttons button:hover {
+      opacity: 0.9;
+      transform: scale(1.04);
+    }
+
+    footer {
+      background-color: rgb(255, 0, 0);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Cabeçalho -->
-  <header>
-    <h1 style="color: white; text-align: center;">HANGETSU UZUMAKI</h1>
-  </header>
-
   <!-- Seção principal -->
-  <section class="hero" style="text-align: center; margin-top: 30px;">
+  <section class="hero">
     <div class="hero-logo"></div>
+    <h1>HANGETSU UZUMAKI</h1>
 
     <!-- Botão de cadastro de aluno -->
-    <a href="cadastro_Aula_Capoeira.html">
-      <button class="button" style="width: 160px; background-color: #000; color: white;">CADASTRE-SE</button>
+    <a href="Cadastro_Aula_Capoeira.html">
+      <button class="button">CADASTRE-SE</button>
     </a>
-    <br>
 
-    <!-- Botão de cadastro do professor -->
-    <a href="Cadastro_Professor.html">
-      <button class="button" style="margin-top: 10px; background-color: #ff0000; width: 200px;">
+    <!-- Botão para cadastro do professor -->
+    <a href="cadastro_Professor.html">
+      <button class="button button-red" style="margin-top: 10px;">
         CADASTRO DO PROFESSOR
       </button>
     </a>
-    <br><br>
 
     <!-- Novos botões -->
-    <a href="imformaçoes.html">
-      <button class="button" style="background-color: #222; color: white; width: 140px;">Informações</button>
-    </a>
-
-    <a href="sobre_nós.html">
-      <button class="button" style="background-color: #333; color: white; width: 180px; margin-left: 5px;">Horários</button>
-    </a>
-
-    <a href="criadores.html">
-      <button class="button" style="background-color: #444; color: white; width: 220px; margin-left: 5px;">Sobre Nós</button>
-    </a>
+    <div class="extra-buttons">
+      <a href="imformaçoes.html">
+        <button class="button btn1">Informações sobre Artes Marciais</button>
+      </a>
+      <a href="sobre_nós.html">
+        <button class="button btn2">Sobre Nossos Horários</button>
+      </a>
+      <a href="#criadores">
+        <button class="button btn3">Conheça Nossos Criadores</button>
+      </a>
+    </div>
   </section>
 
   <!-- Sobre a escola -->
   <section class="sobre">
     <div>
-      <h2 style="color: #000000;">Sobre a nossa escola:</h2>
+      <h2 style="color: #000000;">sobre a nossa escola:</h2>
       <p>
         A Hangetsu Uzumaki é mais do que uma escola de artes marciais — é um caminho de vida baseado em disciplina,
         respeito e dedicação. Com foco na formação de pessoas, oferece três modalidades: capoeira, karatê e jiu-jitsu.
@@ -59,6 +149,7 @@
         interesse pelo aprendizado em crianças e adolescentes, promovendo saúde, autodefesa e desenvolvimento físico e mental.
       </p>
     </div>
+
     <img src="fotos/imagem-da-escola.png" alt="Imagem da escola">
   </section>
 
@@ -86,9 +177,10 @@
   </section>
 
   <!-- Criadores -->
-  <section class="criadores">
+  <section class="criadores" id="criadores">
     <h2>nossos criadores</h2>
     <div class="grid-criadores" style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+
       <!-- Rhayssa -->
       <div class="criador" style="text-align: center;">
         <div style="width: 120px; height: 120px; border-radius: 50%; background-image: url('fotos/foto1.png'); background-size: cover; background-position: center; margin: auto;"></div>
@@ -102,10 +194,10 @@
         </a>
       </div>
 
-      <!-- João (Cati) -->
+      <!-- Cati -->
       <div class="criador" style="text-align: center;">
         <div style="width: 120px; height: 120px; border-radius: 50%; background-image: url('fotos/foto4.jpeg'); background-size: cover; background-position: center; margin: auto;"></div>
-        <p><strong>João Pedro</strong></p>
+        <p><strong>Cati</strong></p>
         <p>17 anos</p>
         <a href="https://github.com/JoaopedroNCPS" target="_blank" style="color: #000000; font-size: 24px;">
           <i class="fab fa-github"></i>
