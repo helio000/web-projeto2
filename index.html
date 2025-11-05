@@ -5,40 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hangetsu Uzumaki</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
 
   <!-- Cabeçalho -->
-<header>
-  <a href="imformaçoes.html" class="informações">Informações sobre Artes Marciais</a>
-  <a href="sobre_nós.html" class="informações">Sobre Nossos Horários</a>
-</header>
-
+  <header>
+    <h1 style="color: white; text-align: center;">HANGETSU UZUMAKI</h1>
+  </header>
 
   <!-- Seção principal -->
-  <section class="hero">
+  <section class="hero" style="text-align: center; margin-top: 30px;">
     <div class="hero-logo"></div>
-    <h1>HANGETSU UZUMAKI</h1>
-   <a href="cadastro_Aula_Capoeira.html">
-  <button class="button">CADASTRE-SE</button>
-</a>
 
+    <!-- Botão de cadastro de aluno -->
+    <a href="cadastro_Aula_Capoeira.html">
+      <button class="button" style="width: 160px; background-color: #000; color: white;">CADASTRE-SE</button>
+    </a>
+    <br>
 
-    <!-- Botão para cadastro do professor -->
-<a href="Cadastro_Professor.html">
-  <button class="button" style="margin-top: 10px; background-color: #ff0000;">
-    CADASTRO DO PROFESSOR
-  </button>
-</a>
+    <!-- Botão de cadastro do professor -->
+    <a href="Cadastro_Professor.html">
+      <button class="button" style="margin-top: 10px; background-color: #ff0000; width: 200px;">
+        CADASTRO DO PROFESSOR
+      </button>
+    </a>
+    <br><br>
 
+    <!-- Novos botões -->
+    <a href="imformaçoes.html">
+      <button class="button" style="background-color: #222; color: white; width: 140px;">Informações</button>
+    </a>
 
+    <a href="sobre_nós.html">
+      <button class="button" style="background-color: #333; color: white; width: 180px; margin-left: 5px;">Horários</button>
+    </a>
+
+    <a href="criadores.html">
+      <button class="button" style="background-color: #444; color: white; width: 220px; margin-left: 5px;">Sobre Nós</button>
+    </a>
   </section>
-
 
   <!-- Sobre a escola -->
   <section class="sobre">
     <div>
-      <h2 style="color: #000000;">sobre a nossa escola:</h2>
+      <h2 style="color: #000000;">Sobre a nossa escola:</h2>
       <p>
         A Hangetsu Uzumaki é mais do que uma escola de artes marciais — é um caminho de vida baseado em disciplina,
         respeito e dedicação. Com foco na formação de pessoas, oferece três modalidades: capoeira, karatê e jiu-jitsu.
@@ -46,11 +59,7 @@
         interesse pelo aprendizado em crianças e adolescentes, promovendo saúde, autodefesa e desenvolvimento físico e mental.
       </p>
     </div>
-
-  
-
     <img src="fotos/imagem-da-escola.png" alt="Imagem da escola">
-
   </section>
 
   <!-- Benefícios -->
@@ -76,58 +85,47 @@
     </div>
   </section>
 
-<!-- Criadores -->
-<section class="criadores">
-  <h2>nossos criadores</h2>
-  <div class="grid-criadores" style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+  <!-- Criadores -->
+  <section class="criadores">
+    <h2>nossos criadores</h2>
+    <div class="grid-criadores" style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+      <!-- Rhayssa -->
+      <div class="criador" style="text-align: center;">
+        <div style="width: 120px; height: 120px; border-radius: 50%; background-image: url('fotos/foto1.png'); background-size: cover; background-position: center; margin: auto;"></div>
+        <p><strong>Rhayssa</strong></p>
+        <p>17 anos</p>
+        <a href="https://www.instagram.com/rhay_mari02?igsh=bHY5dGtvdTk3NG0z" target="_blank" style="color: #000000; font-size: 24px;">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://github.com/Rhay1102" target="_blank" style="color: #000000; font-size: 24px;">
+          <i class="fab fa-github"></i>
+        </a>
+      </div>
 
-    <!-- Rhayssa -->
-    <div class="criador" style="text-align: center;">
-      <div style="width: 120px; height: 120px; border-radius: 50%; background-image: url('fotos/foto1.png'); background-size: cover; background-position: center; margin: auto;"></div>
-      <p><strong>Rhayssa</strong></p>
-      <p>17 anos</p>
-      <a href="https://www.instagram.com/rhay_mari02?igsh=bHY5dGtvdTk3NG0z" target="_blank" style="color: #000000; font-size: 24px;">
-        <i class="fab fa-instagram"></i>
-      </a>
-       <a href="https://github.com/Rhay1102" target="_blank" style="color: #000000; font-size: 24px;">
-      <i class="fab fa-github"></i>
-    </a>
+      <!-- João (Cati) -->
+      <div class="criador" style="text-align: center;">
+        <div style="width: 120px; height: 120px; border-radius: 50%; background-image: url('fotos/foto4.jpeg'); background-size: cover; background-position: center; margin: auto;"></div>
+        <p><strong>João Pedro</strong></p>
+        <p>17 anos</p>
+        <a href="https://github.com/JoaopedroNCPS" target="_blank" style="color: #000000; font-size: 24px;">
+          <i class="fab fa-github"></i>
+        </a>
+      </div>
+
+      <!-- Hélio -->
+      <div class="criador" style="text-align: center;">
+        <div style="width: 120px; height: 120px; border-radius: 50%; background-image: url('fotos/Helio000.jpeg'); background-size: cover; background-position: center; margin: auto;"></div>
+        <p><strong>Hélio Alves</strong></p>
+        <p>20 anos</p>
+        <a href="https://www.instagram.com/h.alves_25/?next=%2F" target="_blank" style="color: #000000; font-size: 24px;">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://github.com/helio000" target="_blank" style="color: #000000; font-size: 24px;">
+          <i class="fab fa-github"></i>
+        </a>
+      </div>
     </div>
-
-    <!-- Cati -->
-    <div class="criador" style="text-align: center;">
-      <div style="width: 120px; height: 120px; border-radius: 50%; background-image: url('fotos/foto4.jpeg'); background-size: cover; background-position: center; margin: auto;"></div>
-      <p><strong>Cati</strong></p>
-      <p>17 anos</p>
-      </a>
-       <a href="https://github.com/JoaopedroNCPS" target="_blank" style="color: #000000; font-size: 24px;">
-      <i class="fab fa-github"></i>
-    </a>
-    </div>
-
-    <!-- Hélio -->
-    <div class="criador" style="text-align: center;">
-      <div style="width: 120px; height: 120px; border-radius: 50%; background-image: url('fotos/Helio000.jpeg'); background-size: cover; background-position: center; margin: auto;"></div>
-      <p><strong>Hélio Alves</strong></p>
-      <p>20 anos</p>
-      <a href="https://www.instagram.com/h.alves_25/?next=%2F" target="_blank" style="color: #000000; font-size: 24px;">
-        <i class="fab fa-instagram"></i>
-         </a>
-    <a href="https://github.com/helio000" target="_blank" style="color: #000000; font-size: 24px;">
-      <i class="fab fa-github"></i>
-    </a>
-  </div>
-</div>
-</section>
-
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-
-<!-- Lembre-se de incluir a Font Awesome no <head> -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-
+  </section>
 
   <!-- Rodapé -->
   <footer>
