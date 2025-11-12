@@ -75,7 +75,8 @@
         }
 
         try {
-          const resposta = await fetch("http://localhost:3100/alunos", {
+          // ✅ Aqui está a única mudança — agora aponta para o backend da Vercel
+          const resposta = await fetch("https://back-projeto-2025.vercel.app/alunos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
