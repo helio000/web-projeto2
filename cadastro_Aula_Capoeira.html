@@ -34,21 +34,15 @@
         <input type="tel" id="telefone" placeholder="Telefone" required />
       </div>
 
-      <div class="input-group">
-        <label for="arte-marcial">Arte Marcial</label>
-        <select id="arte-marcial" required>
-          <option value="">Selecione uma opção</option>
-          <option value="capoeira">Capoeira</option>
-          <option value="jiu-jitsu">Jiu-Jitsu</option>
-          <option value="karatê">Karatê</option>
-        </select>
-      </div>
-
-      <!-- ✔️ Campo RA adicionado -->
-      <div class="input-group">
-        <label for="ra">RA</label>
-        <input type="text" id="ra" placeholder="Digite seu RA" required />
-      </div>
+ <div class="input-group">
+  <label for="arte-marcial">Arte Marcial</label>
+  <select id="arte-marcial" required>
+    <option value="">Selecione uma opção</option>
+    <option value="capoeira">Capoeira</option>
+    <option value="jiu-jitsu">Jiu-Jitsu</option>
+    <option value="karatê">Karatê</option>
+  </select>
+</div>
 
       <div class="input-group">
         <button type="submit" class="enviar-button">Enviar</button>
@@ -72,12 +66,10 @@
           datanasc: document.getElementById("datanasc").value,
           email: document.getElementById("email").value.trim().toLowerCase(),
           telefone: document.getElementById("telefone").value.replace(/\D/g, ""),
-          arteMarcial: document.getElementById("arte-marcial").value,
-          ra: document.getElementById("ra").value.trim()  // ✔️ RA incluído
+          arteMarcial: document.getElementById("arte-marcial").value
         };
 
-        // ✔️ Validação atualizada
-        if (!dados.nome || !dados.datanasc || !dados.email || !dados.telefone || !dados.arteMarcial || !dados.ra) {
+        if (!dados.nome || !dados.datanasc || !dados.email || !dados.telefone || !dados.arteMarcial) {
           alert("Preencha todos os campos!");
           return;
         }
