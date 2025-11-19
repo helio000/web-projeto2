@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="style1.css">
   <title>Cadastro</title>
 </head>
-<body style="background-image: url('fotos/fundo-principal.png'); background-size: cover; margin: 0;">
+<body style="background-image: url('fotos/fundoForm2.png'); background-size: cover; margin: 0;">
 
   <form id="formulario" class="box-form">
     <div class="form">
@@ -40,8 +40,14 @@
           <option value="">Selecione uma opção</option>
           <option value="capoeira">Capoeira</option>
           <option value="jiu-jitsu">Jiu-Jitsu</option>
-          <option value="karate">Karatê</option>
+          <option value="karatê">Karatê</option>
         </select>
+      </div>
+
+      <!-- ✔️ Campo RA adicionado -->
+      <div class="input-group">
+        <label for="ra">RA</label>
+        <input type="text" id="ra" placeholder="Digite seu RA" required />
       </div>
 
       <div class="input-group">
@@ -66,17 +72,18 @@
           datanasc: document.getElementById("datanasc").value,
           email: document.getElementById("email").value.trim().toLowerCase(),
           telefone: document.getElementById("telefone").value.replace(/\D/g, ""),
-          arteMarcial: document.getElementById("arte-marcial").value
+          arteMarcial: document.getElementById("arte-marcial").value,
+          ra: document.getElementById("ra").value.trim()  // ✔️ RA incluído
         };
 
-        if (!dados.nome || !dados.datanasc || !dados.email || !dados.telefone || !dados.arteMarcial) {
+        // ✔️ Validação atualizada
+        if (!dados.nome || !dados.datanasc || !dados.email || !dados.telefone || !dados.arteMarcial || !dados.ra) {
           alert("Preencha todos os campos!");
           return;
         }
 
         try {
-          // ✅ Aqui está a única mudança — agora aponta para o backend da Vercel
-          const resposta = await fetch("https://back-projeto-2025.vercel.app/alunos", {
+          const resposta = await fetch("http://localhost:3100/alunos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
