@@ -29,7 +29,7 @@
 
       <div class="input-group">
         <label for="cpf">CPF</label>
-        <input type="text" id="cpf" placeholder="CPF" required />
+        <input type="text" id="cpf" placeholder="Digite apenas números" required />
       </div>
 
       <div class="input-group">
@@ -68,7 +68,7 @@
           nome: document.getElementById("nome").value.trim(),
           email: document.getElementById("email").value.trim().toLowerCase(),
           telefone: document.getElementById("telefone").value.replace(/\D/g, ""),
-          cpf: document.getElementById("cpf").value.trim(),
+          cpf: document.getElementById("cpf").value.replace(/\D/g, ""),
           arteMarcial: document.getElementById("arte-marcial").value.trim(),
           datanasc: document.getElementById("datanasc").value
         };
@@ -79,42 +79,37 @@
         }
 
         if (dados.cpf.length !== 11) {
-          alert("CPF inválido. Certifique-se de digitar 11 números.");
+          alert("CPF inválido! Digite 11 números.");
           return;
         }
 
         try {
-          const resposta = await fetch("http://localhost:3100/professores", {
+          const resposta = await fetch("https://back-projeto-2025.vercel.app/professores", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
           });
 
-          let resultado;
-          try {
-            resultado = await resposta.json();
-          } catch {
-            resultado = { error: "Resposta inválida do servidor" };
-          }
+          const resultado = await resposta.json();
 
           if (!resposta.ok) {
             alert("Erro ao cadastrar professor: " + (resultado.error || "Erro desconhecido"));
             return;
           }
 
-          alert("Cadastro realizado! Você será redirecionado para o login.");
+          alert("Cadastro realizado com sucesso!");
           form.reset();
+
           setTimeout(() => {
             window.location.href = "LoginProfessor.html";
           }, 2000);
 
         } catch (erro) {
           console.error("Erro ao enviar dados:", erro);
-          alert("Erro na conexão com o servidor.");
+          alert("Não foi possível conectar com o servidor.");
         }
       });
     });
   </script>
 </body>
 </html>
-
