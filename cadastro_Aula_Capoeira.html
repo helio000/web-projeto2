@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta viewport="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style1.css">
   <title>Cadastro</title>
 </head>
@@ -11,7 +11,7 @@
   <form id="formulario" class="box-form">
     <div class="form">
       
-      <!-- Título Cadastro em cima do formulário -->
+      <!-- Título -->
       <h2 class="Cadastro">Cadastro</h2>
 
       <div class="input-group">
@@ -34,15 +34,15 @@
         <input type="tel" id="telefone" placeholder="Telefone" required />
       </div>
 
- <div class="input-group">
-  <label for="arte-marcial">Arte Marcial</label>
-  <select id="arte-marcial" required>
-    <option value="">Selecione uma opção</option>
-    <option value="capoeira">Capoeira</option>
-    <option value="jiu-jitsu">Jiu-Jitsu</option>
-    <option value="karatê">Karatê</option>
-  </select>
-</div>
+      <div class="input-group">
+        <label for="arte-marcial">Arte Marcial</label>
+        <select id="arte-marcial" required>
+          <option value="">Selecione uma opção</option>
+          <option value="capoeira">Capoeira</option>
+          <option value="jiu-jitsu">Jiu-Jitsu</option>
+          <option value="karatê">Karatê</option>
+        </select>
+      </div>
 
       <div class="input-group">
         <button type="submit" class="enviar-button">Enviar</button>
@@ -75,38 +75,29 @@
         }
 
         try {
-          const resposta = await fetch("http://localhost:3100/alunos", {
+          const resposta = await fetch("https://back-projeto-2025.vercel.app/alunos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
           });
 
-          let resultado;
-          try {
-            resultado = await resposta.json();
-          } catch {
-            resultado = { error: "Resposta inválida do servidor" };
-          }
+          const resultado = await resposta.json();
 
           if (!resposta.ok) {
-            console.error("Erro do backend:", resultado);
             alert("Erro ao cadastrar aluno: " + (resultado.error || "Erro desconhecido"));
             return;
           }
 
-          let alunos = JSON.parse(localStorage.getItem("alunos")) || [];
-          alunos.push(resultado);
-          localStorage.setItem("alunos", JSON.stringify(alunos));
+          alert("Aluno cadastrado com sucesso! Redirecionando...");
 
-          alert("Aluno cadastrado com sucesso! Você será redirecionado para a sala em 5 segundos.");
           form.reset();
 
           setTimeout(() => {
             window.location.href = "sala.html";
-          }, 5000);
+          }, 3000);
 
         } catch (erro) {
-          console.error("Erro ao enviar dados para o servidor:", erro);
+          console.error("Erro ao enviar dados:", erro);
           alert("Erro na conexão com o servidor.");
         }
       });
