@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta viewport="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style1.css">
   <title>Cadastro</title>
 </head>
@@ -11,7 +11,7 @@
   <form id="formulario" class="box-form">
     <div class="form">
       
-      <!-- Título -->
+      <!-- Título Cadastro em cima do formulário -->
       <h2 class="Cadastro">Cadastro</h2>
 
       <div class="input-group">
@@ -32,6 +32,12 @@
       <div class="input-group">
         <label for="telefone">Telefone</label>
         <input type="tel" id="telefone" placeholder="Telefone" required />
+      </div>
+
+      <!-- CAMPO RA ADICIONADO -->
+      <div class="input-group">
+        <label for="ra">RA</label>
+        <input type="text" id="ra" placeholder="RA do aluno" required />
       </div>
 
       <div class="input-group">
@@ -66,10 +72,11 @@
           datanasc: document.getElementById("datanasc").value,
           email: document.getElementById("email").value.trim().toLowerCase(),
           telefone: document.getElementById("telefone").value.replace(/\D/g, ""),
+          ra: document.getElementById("ra").value.trim(),
           arteMarcial: document.getElementById("arte-marcial").value
         };
 
-        if (!dados.nome || !dados.datanasc || !dados.email || !dados.telefone || !dados.arteMarcial) {
+        if (!dados.nome || !dados.datanasc || !dados.email || !dados.telefone || !dados.ra || !dados.arteMarcial) {
           alert("Preencha todos os campos!");
           return;
         }
@@ -81,23 +88,32 @@
             body: JSON.stringify(dados)
           });
 
-          const resultado = await resposta.json();
+          let resultado;
+          try {
+            resultado = await resposta.json();
+          } catch {
+            resultado = { error: "Resposta inválida do servidor" };
+          }
 
           if (!resposta.ok) {
+            console.error("Erro do backend:", resultado);
             alert("Erro ao cadastrar aluno: " + (resultado.error || "Erro desconhecido"));
             return;
           }
 
-          alert("Aluno cadastrado com sucesso! Redirecionando...");
+          let alunos = JSON.parse(localStorage.getItem("alunos")) || [];
+          alunos.push(resultado);
+          localStorage.setItem("alunos", JSON.stringify(alunos));
 
+          alert("Aluno cadastrado com sucesso! Você será redirecionado para a sala em 5 segundos.");
           form.reset();
 
           setTimeout(() => {
             window.location.href = "sala.html";
-          }, 3000);
+          }, 5000);
 
         } catch (erro) {
-          console.error("Erro ao enviar dados:", erro);
+          console.error("Erro ao enviar dados para o servidor:", erro);
           alert("Erro na conexão com o servidor.");
         }
       });
