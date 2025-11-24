@@ -11,7 +11,6 @@
   <form id="formulario" class="box-form">
     <div class="form">
       
-      <!-- Título Cadastro em cima do formulário -->
       <h2 class="Cadastro">Cadastro</h2>
 
       <div class="input-group">
@@ -34,7 +33,6 @@
         <input type="tel" id="telefone" placeholder="Telefone" required />
       </div>
 
-      <!-- CAMPO RA ADICIONADO -->
       <div class="input-group">
         <label for="ra">RA</label>
         <input type="text" id="ra" placeholder="RA do aluno" required />
@@ -72,11 +70,14 @@
           datanasc: document.getElementById("datanasc").value,
           email: document.getElementById("email").value.trim().toLowerCase(),
           telefone: document.getElementById("telefone").value.replace(/\D/g, ""),
-          ra: document.getElementById("ra").value.trim(),
+          
+          // CORREÇÃO IMPORTANTE → Backend espera RA com maiúsculo e como número
+          RA: Number(document.getElementById("ra").value.trim()),
+
           arteMarcial: document.getElementById("arte-marcial").value
         };
 
-        if (!dados.nome || !dados.datanasc || !dados.email || !dados.telefone || !dados.ra || !dados.arteMarcial) {
+        if (!dados.nome || !dados.datanasc || !dados.email || !dados.telefone || !dados.RA || !dados.arteMarcial) {
           alert("Preencha todos os campos!");
           return;
         }
