@@ -33,7 +33,12 @@
         <input type="tel" id="telefone" placeholder="Telefone" required />
       </div>
 
-  
+      <!-- CAMPO RA -->
+      <div class="input-group">
+        <label for="ra">RA do Aluno</label>
+        <input type="number" id="ra" placeholder="Digite o RA" required />
+      </div>
+
       <div class="input-group">
         <label for="arte-marcial">Arte Marcial</label>
         <select id="arte-marcial" required>
@@ -61,18 +66,17 @@
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        // CAPTURA DOS DADOS
         const dados = {
           nome: document.getElementById("nome").value.trim(),
           datanasc: document.getElementById("datanasc").value,
           email: document.getElementById("email").value.trim().toLowerCase(),
           telefone: document.getElementById("telefone").value.replace(/\D/g, ""),
-          
-          // CORREÇÃO IMPORTANTE → Backend espera RA com maiúsculo e como número
-          RA: Number(document.getElementById("ra").value.trim()),
-
+          RA: Number(document.getElementById("ra").value),
           arteMarcial: document.getElementById("arte-marcial").value
         };
 
+        // VALIDAÇÃO
         if (!dados.nome || !dados.datanasc || !dados.email || !dados.telefone || !dados.RA || !dados.arteMarcial) {
           alert("Preencha todos os campos!");
           return;
@@ -85,12 +89,9 @@
             body: JSON.stringify(dados)
           });
 
-          let resultado;
-          try {
-            resultado = await resposta.json();
-          } catch {
-            resultado = { error: "Resposta inválida do servidor" };
-          }
+          const resultado = await resposta.json().catch(() => ({
+            error: "Resposta inválida do servidor"
+          }));
 
           if (!resposta.ok) {
             console.error("Erro do backend:", resultado);
@@ -98,6 +99,7 @@
             return;
           }
 
+          // SALVA NO LOCALSTORAGE
           let alunos = JSON.parse(localStorage.getItem("alunos")) || [];
           alunos.push(resultado);
           localStorage.setItem("alunos", JSON.stringify(alunos));
