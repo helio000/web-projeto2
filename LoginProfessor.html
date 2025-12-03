@@ -31,53 +31,59 @@
       </div>
     </div>
   </form>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("login-form");
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("login-form");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const nome = document.getElementById("nome").value.trim();
 
-        const email = document.getElementById("email").value.trim().toLowerCase();
-        const nome = document.getElementById("nome").value.trim();
+    if (!email || !nome) {
+      alert("Preencha todos os campos!");
+      return;
+    }
 
-        if (!email || !nome) {
-          alert("Preencha todos os campos!");
-          return;
-        }
+    try {
+      // Correção: garantir que os campos sejam strings limpas
+      const body = JSON.stringify({ nome: nome, email: email });
 
-        try {
-       const resposta = await fetch("https://back-projeto-2025-12.onrender.com/professores/login", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ nome, email })
-});
-
-
-          let resultado;
-          try { resultado = await resposta.json(); } 
-          catch { resultado = { error: "Resposta inválida do servidor" }; }
-
-          if (!resposta.ok) {
-            alert("Erro no login: " + (resultado.error || "Erro desconhecido"));
-            return;
-          }
-
-          localStorage.setItem("professorLogado", JSON.stringify(resultado.professor));
-
-          alert("Login realizado! Redirecionando...");
-          setTimeout(() => {
-            window.location.href = "SalaDosProfessores.html";
-          }, 2000);
-
-        } catch (erro) {
-          console.error("Erro ao conectar com o servidor:", erro);
-          alert("Erro na conexão com o servidor.");
-        }
+      const resposta = await fetch("https://back-projeto-2025-12.onrender.com/professores/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: body
       });
-    });
-  </script>
+
+      let resultado;
+      try { 
+        resultado = await resposta.json(); 
+      } catch { 
+        resultado = { error: "Resposta inválida do servidor" }; 
+      }
+
+      if (!resposta.ok) {
+        alert("Erro no login: " + (resultado.error || "Erro desconhecido"));
+        return;
+      }
+
+      localStorage.setItem("professorLogado", JSON.stringify(resultado.professor));
+
+      alert("Login realizado! Redirecionando...");
+      setTimeout(() => {
+        window.location.href = "SalaDosProfessores.html";
+      }, 2000);
+
+    } catch (erro) {
+      console.error("Erro ao conectar com o servidor:", erro);
+      alert("Erro na conexão com o servidor.");
+    }
+  });
+});
+</script>
+
+  
 </body>
 </html>
 

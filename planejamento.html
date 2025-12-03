@@ -15,113 +15,25 @@
       flex-direction: column;
       align-items: center;
     }
-
-    h2 {
-      text-align: center;
-      color: #58a6ff;
-      text-shadow: 0 0 8px #000;
-      margin-bottom: 10px;
-    }
-
-    #professor-info {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 16px;
-      color: #c9d1d9;
-    }
-
-    #novo {
-      display: none;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin: 20px auto;
-      flex-wrap: wrap;
-    }
-
-    #novo input, #novo select {
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #30363d;
-      background: #161b22;
-      color: white;
-      width: 200px;
-    }
-
-    button {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
+    h2 { text-align: center; color: #58a6ff; text-shadow: 0 0 8px #000; margin-bottom: 10px; }
+    #professor-info { text-align: center; margin-bottom: 20px; font-size: 16px; color: #c9d1d9; }
+    #novo { display: none; justify-content: center; align-items: center; gap: 10px; margin: 20px auto; flex-wrap: wrap; }
+    #novo input, #novo select { padding: 8px; border-radius: 5px; border: 1px solid #30363d; background: #161b22; color: white; width: 200px; }
+    button { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
     button:hover { opacity: 0.9; }
-
-    #salvar {
-      background-color: #28a745;
-      color: white;
-    }
-
-    .editar {
-      background-color: #0366d6;
-      color: white;
-    }
-
-    .excluir {
-      background-color: #d73a49;
-      color: white;
-    }
-
-    table {
-      width: 95%;
-      max-width: 900px;
-      margin: 0 auto;
-      border-collapse: collapse;
-      background: rgba(255,255,255,0.05);
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
-
-    th, td {
-      border: 1px solid #30363d;
-      padding: 12px;
-      text-align: center;
-    }
-
-    th {
-      background: #161b22;
-      color: #58a6ff;
-      font-size: 16px;
-    }
-
-    td {
-      background: #0d1117;
-      color: #c9d1d9;
-    }
-
-    tr:hover td {
-      background: rgba(56,139,253,0.1);
-    }
-
-    #mensagem {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 15px;
-      color: #9be9a8;
-    }
-
-    #voltar {
-      margin-top: 25px;
-      background-color: #ff0000;
-      color: white;
-    }
+    #salvar { background-color: #28a745; color: white; }
+    .editar { background-color: #0366d6; color: white; }
+    .excluir { background-color: #d73a49; color: white; }
+    table { width: 95%; max-width: 900px; margin: 0 auto; border-collapse: collapse; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+    th, td { border: 1px solid #30363d; padding: 12px; text-align: center; }
+    th { background: #161b22; color: #58a6ff; font-size: 16px; }
+    td { background: #0d1117; color: #c9d1d9; }
+    tr:hover td { background: rgba(56,139,253,0.1); }
+    #mensagem { text-align: center; margin-top: 15px; font-size: 15px; color: #9be9a8; }
+    #voltar { margin-top: 25px; background-color: #ff0000; color: white; }
   </style>
 </head>
 <body>
-
   <h2>Planejamento Semanal</h2>
   <div id="professor-info"></div>
 
@@ -152,7 +64,7 @@
   <p id="mensagem"></p>
   <button id="voltar">Voltar para a Sala</button>
 
- <script>
+  <script>
     document.addEventListener("DOMContentLoaded", async () => {
       const tabela = document.querySelector("#tabela tbody");
       const professor = JSON.parse(localStorage.getItem("professorLogado"));
@@ -160,6 +72,7 @@
       const salvarBtn = document.getElementById("salvar");
       const msg = document.getElementById("mensagem");
       const professorInfo = document.getElementById("professor-info");
+      const BACKEND = "https://back-projeto-2025-12.onrender.com";
 
       if (professor) {
         novoDiv.style.display = "flex";
@@ -171,105 +84,116 @@
       async function carregar() {
         tabela.innerHTML = "<tr><td colspan='4'>Carregando...</td></tr>";
 
-        const res = await fetch("http://localhost:3100/planejamentos");
-        const planejamentos = await res.json();
+        try {
+          const res = await fetch(`${BACKEND}/planejamentos`);
+          if (!res.ok) throw new Error("Erro ao buscar planejamentos");
+          const planejamentos = await res.json();
 
-        tabela.innerHTML = "";
+          tabela.innerHTML = "";
+          if (planejamentos.length === 0) {
+            tabela.innerHTML = "<tr><td colspan='4'>Nenhuma atividade cadastrada.</td></tr>";
+            return;
+          }
 
-        if (planejamentos.length === 0) {
-          tabela.innerHTML = "<tr><td colspan='4'>Nenhuma atividade cadastrada.</td></tr>";
-          return;
-        }
+          planejamentos.forEach(p => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${p.diaSemana}</td>
+              <td>${p.atividade}</td>
+              <td>${p.professor?.nome || "—"}</td>
+              <td>
+                <button class="editar" data-id="${p.id}" data-prof="${p.professorId}" data-dia="${p.diaSemana}">Editar</button>
+                <button class="excluir" data-id="${p.id}" data-prof="${p.professorId}">Excluir</button>
+              </td>
+            `;
+            tabela.appendChild(tr);
+          });
 
-        planejamentos.forEach(p => {
-          const tr = document.createElement("tr");
+          // Botões editar
+          document.querySelectorAll(".editar").forEach(btn => {
+            btn.addEventListener("click", async () => {
+              const id = btn.dataset.id;
+              const donoId = parseInt(btn.dataset.prof);
+              const diaSemana = btn.dataset.dia;
 
-          tr.innerHTML = `
-            <td>${p.diaSemana}</td>
-            <td>${p.atividade}</td>
-            <td>${p.professor?.nome || "—"}</td>
-            <td>
-              <button class="editar" data-id="${p.id}" data-prof="${p.professorId}" data-dia="${p.diaSemana}">Editar</button>
-              <button class="excluir" data-id="${p.id}" data-prof="${p.professorId}">Excluir</button>
-            </td>
-          `;
-          tabela.appendChild(tr);
-        });
+              if (!professor || professor.id !== donoId) {
+                alert("Você não tem permissão para editar esta atividade!");
+                return;
+              }
 
-        // Edição de atividade
-        document.querySelectorAll(".editar").forEach(btn => {
-          btn.addEventListener("click", async () => {
-            const id = btn.dataset.id;
-            const donoId = parseInt(btn.dataset.prof);
-            const diaSemana = btn.dataset.dia;
+              const novo = prompt("Nova descrição da atividade:", btn.parentElement.previousElementSibling.textContent);
+              if (!novo) return;
 
-            if (!professor || professor.id !== donoId) {
-              alert("Você não tem permissão para editar esta atividade!");
-              return;
-            }
-
-            const novo = prompt("Nova descrição da atividade:", btn.parentElement.previousElementSibling.textContent);
-            if (!novo) return;
-
-            await fetch(`http://localhost:3100/planejamentos/${id}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                atividade: novo,
-                diaSemana,          // manter o dia da semana
-                professorId: donoId // manter o professor
-              })
+              try {
+                const res = await fetch(`${BACKEND}/planejamentos/${id}`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ atividade: novo, diaSemana })
+                });
+                if (!res.ok) throw new Error("Erro ao atualizar atividade");
+                msg.textContent = "Atividade atualizada com sucesso!";
+                carregar();
+              } catch (erro) {
+                console.error(erro);
+                alert("Erro ao atualizar atividade");
+              }
             });
-
-            msg.textContent = "Atividade atualizada com sucesso!";
-            carregar();
           });
-        });
 
-        // Exclusão de atividade
-        document.querySelectorAll(".excluir").forEach(btn => {
-          btn.addEventListener("click", async () => {
-            const id = btn.dataset.id;
-            const donoId = parseInt(btn.dataset.prof);
+          // Botões excluir
+          document.querySelectorAll(".excluir").forEach(btn => {
+            btn.addEventListener("click", async () => {
+              const id = btn.dataset.id;
+              const donoId = parseInt(btn.dataset.prof);
 
-            if (!professor || professor.id !== donoId) {
-              alert("Você não tem permissão para excluir esta atividade!");
-              return;
-            }
+              if (!professor || professor.id !== donoId) {
+                alert("Você não tem permissão para excluir esta atividade!");
+                return;
+              }
 
-            if (!confirm("Deseja excluir esta atividade?")) return;
+              if (!confirm("Deseja excluir esta atividade?")) return;
 
-            await fetch(`http://localhost:3100/planejamentos/${id}`, { method: "DELETE" });
-            msg.textContent = "Atividade excluída com sucesso!";
-            carregar();
+              try {
+                const res = await fetch(`${BACKEND}/planejamentos/${id}`, { method: "DELETE" });
+                if (!res.ok) throw new Error("Erro ao excluir atividade");
+                msg.textContent = "Atividade excluída com sucesso!";
+                carregar();
+              } catch (erro) {
+                console.error(erro);
+                alert("Erro ao excluir atividade");
+              }
+            });
           });
-        });
+
+        } catch (erro) {
+          console.error(erro);
+          tabela.innerHTML = "<tr><td colspan='4'>Erro ao carregar planejamentos</td></tr>";
+        }
       }
 
       // Adicionar nova atividade
       salvarBtn.addEventListener("click", async () => {
         if (!professor) return alert("Somente professores podem adicionar atividades!");
-
         const diaSemana = document.getElementById("diaSemana").value;
         const atividade = document.getElementById("atividade").value.trim();
         if (!atividade) return alert("Descreva a atividade!");
 
-        await fetch("http://localhost:3100/planejamentos", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            diaSemana,
-            atividade,
-            professorId: professor.id
-          })
-        });
-
-        msg.textContent = "Atividade adicionada com sucesso!";
-        document.getElementById("atividade").value = "";
-        carregar();
+        try {
+          const res = await fetch(`${BACKEND}/planejamentos`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ diaSemana, atividade, professorId: professor.id })
+          });
+          if (!res.ok) throw new Error("Erro ao adicionar atividade");
+          msg.textContent = "Atividade adicionada com sucesso!";
+          document.getElementById("atividade").value = "";
+          carregar();
+        } catch (erro) {
+          console.error(erro);
+          alert("Erro ao adicionar atividade");
+        }
       });
 
-      // Voltar para sala
       document.getElementById("voltar").addEventListener("click", () => {
         window.location.href = "sala.html";
       });
