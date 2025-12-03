@@ -3,15 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style2.css">
 <title>Sala de Alunos</title>
 <style>
 html, body { height: 100%; margin: 0; padding: 0; }
 body {
     font-family: Arial, sans-serif;
     color: white;
-    background-image: url('fotos/fundo-principal.png');
-    background-size: center;
+    background-image: url('fotos/fundoForm2.png');
+    background-size: cover;
     background-position: center;
     display: flex;
     flex-direction: column;
@@ -26,35 +25,53 @@ body {
     width: 100%;
 }
 .Informações { text-align: center; font-size: 28px; margin: 20px 0; text-shadow: 1px 1px 5px black; }
-#filtros { display: flex; gap: 10px; margin-bottom: 20px; }
-#filtros button { padding: 8px 15px; border: none; border-radius: 5px; background-color: #28a745; color: white; cursor: pointer; transition: 0.3s; }
-#filtros button:hover { background-color: #218838; }
-#lista-sala {
+#filtros { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+#filtros button { padding: 8px 15px; border: none; border-radius: 5px; background-color: #ff0303; color: white; cursor: pointer; transition: 0.3s; }
+#filtros button:hover { background-color: #ff4b4b; }
+
+fieldset {
     width: 90%; max-width: 800px; margin-bottom: 20px; padding: 20px;
     background-color: rgba(0,0,0,0.7); border-radius: 10px;
-    display: flex; flex-direction: column; gap: 15px; min-height: 50px;
+    display: flex; flex-direction: column; gap: 15px;
+    min-height: 50px;
 }
-.aluno {
-    background-color: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;
-    display: flex; flex-direction: column; gap: 5px;
+
+.aluno, .aula {
+    background-color: rgba(255,255,255,0.1);
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
-.aluno p { margin: 0; }
-.remover { align-self: flex-start; padding: 5px 10px; border: none; border-radius: 5px; background-color: red; color: white; cursor: pointer; }
+.aluno p, .aula p { margin: 0; }
+
+.remover {
+    align-self: flex-start;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: red;
+    color: white;
+    cursor: pointer;
+}
 .remover:hover { background-color: darkred; }
+
 #voltar-home {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
-    background-color: #007bff;
+    background-color: #003cff;
     color: white;
     cursor: pointer;
     transition: 0.3s;
     margin-top: auto;
     margin-bottom: 20px;
 }
-#voltar-home:hover { background-color: #0056b3; }
+#voltar-home:hover { background-color: #ff0000; }
+
 @media (max-width: 600px) {
-    #lista-sala { padding: 15px; }
+    fieldset { padding: 15px; }
     .Informações { font-size: 22px; }
     #filtros { flex-direction: column; gap: 5px; }
 }
@@ -64,42 +81,129 @@ body {
 
 <div class="conteudo">
     <h5 class="Informações">Sala de Alunos</h5>
+
     <div id="filtros">
         <button data-arte="">Todos</button>
-        <button data-arte="capoeira">Capoeira</button>
-        <button data-arte="jiu-jitsu">Jiu-Jitsu</button>
-        <button data-arte="karate">Karatê</button>
+        <button data-arte="Capoeira">Capoeira</button>
+        <button data-arte="Jiu-Jitsu">Jiu-Jitsu</button>
+        <button data-arte="Karatê">Karatê</button>
     </div>
+
     <fieldset id="lista-sala"></fieldset>
+
+    <fieldset id="lista-aulas">
+        <legend>Aulas da Semana</legend>
+    </fieldset>
 </div>
 
-<button id="voltar-home">Voltar para o inicio</button>
+<button id="voltar-home">Voltar para a tela inicial</button>
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-    const lista = document.getElementById("lista-sala");
+    const listaAlunos = document.getElementById("lista-sala");
+    const listaAulas = document.getElementById("lista-aulas");
     const botoes = document.querySelectorAll("#filtros button");
+
     let alunos = [];
+    let aulas = [];
 
     document.getElementById("voltar-home").addEventListener("click", () => {
-        window.location.href = "index.html";
+        window.location.href = "home.html";
     });
 
-    async function carregarAlunos() {
+    async function carregarDados() {
         try {
-            const resposta = await fetch('http://localhost:3100/alunos');
-            if (!resposta.ok) throw new Error("Erro ao buscar alunos");
-            alunos = await resposta.json();
-            localStorage.setItem('alunos', JSON.stringify(alunos));
-            atualizarLista();
-        } catch (err) {
-            console.error("Erro ao carregar alunos:", err);
-            const dadosLocal = localStorage.getItem('alunos');
-            if (dadosLocal) {
-                alunos = JSON.parse(dadosLocal);
+            const [resAlunos, resAulas] = await Promise.all([
+                fetch('http://localhost:3100/alunos'),
+                fetch('http://localhost:3100/planejamentos')
+            ]);
+
+            alunos = await resAlunos.json();
+            aulas = await resAulas.json();
+
+            console.log("Alunos recebidos:", alunos); // Log para depuração
+            console.log("Aulas recebidas:", aulas);   // Log para depuração
+
+            // Verificar se alunos e aulas são arrays
+            if (Array.isArray(alunos) && Array.isArray(aulas)) {
                 atualizarLista();
+                atualizarAulas();
+            } else {
+                console.error("Dados não são arrays.");
             }
+        } catch (err) {
+            console.error("Erro ao carregar dados:", err);
         }
+    }
+
+    // Função para normalizar texto (remover acentos)
+    function normalizar(texto) {
+        return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
+    }
+
+    function atualizarLista(filtro = "") {
+        listaAlunos.innerHTML = "";
+
+        // Verifica se alunos é um array
+        if (!Array.isArray(alunos)) {
+            console.error("Alunos não é um array:", alunos);
+            return;
+        }
+
+        const filtrados = filtro
+            ? alunos.filter(a => normalizar(a.arteMarcial) === normalizar(filtro))
+            : alunos;
+
+        if (filtrados.length === 0) {
+            listaAlunos.innerHTML = "<p>Nenhum aluno cadastrado.</p>";
+            return;
+        }
+
+        filtrados.forEach(aluno => {
+            const div = document.createElement("div");
+            div.classList.add("aluno");
+            div.innerHTML = `
+                <p><strong>Nome:</strong> ${aluno.nome}</p>
+                <p><strong>RA:</strong> ${aluno.RA || "Não informado"}</p>
+                <p><strong>Email:</strong> ${aluno.email}</p>
+                <p><strong>Telefone:</strong> ${aluno.telefone}</p>
+                <p><strong>Arte Marcial:</strong> ${aluno.arteMarcial}</p>
+                <p><strong>Data de Nascimento:</strong> ${aluno.datanasc ? aluno.datanasc.split('T')[0] : ''}</p>
+                <button class="remover">Remover Aluno</button>
+            `;
+            div.querySelector(".remover").addEventListener("click", () => removerAluno(aluno.id));
+            listaAlunos.appendChild(div);
+        });
+    }
+
+    function atualizarAulas(filtro = "") {
+        listaAulas.innerHTML = "<legend>Aulas da Semana</legend>";
+
+        // Verifica se aulas é um array
+        if (!Array.isArray(aulas)) {
+            console.error("Aulas não é um array:", aulas);
+            return;
+        }
+
+        const filtradas = filtro
+            ? aulas.filter(a => normalizar(a.professor?.arteMarcial) === normalizar(filtro))
+            : aulas;
+
+        if (filtradas.length === 0) {
+            listaAulas.innerHTML += "<p>Nenhuma aula cadastrada.</p>";
+            return;
+        }
+
+        filtradas.forEach(aula => {
+            const div = document.createElement("div");
+            div.classList.add("aula");
+            div.innerHTML = `
+                <p><strong>Dia:</strong> ${aula.diaSemana}</p>
+                <p><strong>Atividade:</strong> ${aula.atividade}</p>
+                <p><strong>Professor:</strong> ${aula.professor?.nome || "—"}</p>
+            `;
+            listaAulas.appendChild(div);
+        });
     }
 
     async function removerAluno(id) {
@@ -107,7 +211,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             const resposta = await fetch(`http://localhost:3100/alunos/${id}`, { method: "DELETE" });
             if (!resposta.ok) throw new Error("Erro ao remover aluno");
             alunos = alunos.filter(a => a.id !== id);
-            localStorage.setItem('alunos', JSON.stringify(alunos));
             atualizarLista();
         } catch (err) {
             console.error(err);
@@ -115,46 +218,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    function atualizarLista(filtro = "") {
-        lista.innerHTML = "";
-        const filtrados = filtro ? alunos.filter(a => a.arteMarcial === filtro) : alunos;
-
-        if (filtrados.length === 0) {
-            const p = document.createElement("p");
-            p.textContent = "Nenhum aluno cadastrado.";
-            lista.appendChild(p);
-        } else {
-            filtrados.forEach(aluno => {
-                const div = document.createElement("div");
-                div.classList.add("aluno");
-
-                div.innerHTML = `
-                    <p><strong>Nome:</strong> ${aluno.nome}</p>
-                    <p><strong>RA:</strong> ${aluno.RA}</p>
-                    <p><strong>Email:</strong> ${aluno.email}</p>
-                    <p><strong>Telefone:</strong> ${aluno.telefone}</p>
-                    <p><strong>Arte Marcial:</strong> ${aluno.arteMarcial}</p>
-                    <p><strong>Data de Nascimento:</strong> ${aluno.datanasc ? aluno.datanasc.split('T')[0] : ''}</p>
-                    <button class="remover">Remover</button>
-                `;
-
-                lista.appendChild(div);
-
-                div.querySelector(".remover").addEventListener("click", () => {
-                    removerAluno(aluno.id);
-                });
-            });
-        }
-    }
-
     botoes.forEach(btn => {
         btn.addEventListener("click", () => {
             const arte = btn.getAttribute("data-arte");
             atualizarLista(arte);
+            atualizarAulas(arte);
         });
     });
 
-    await carregarAlunos();
+    await carregarDados();
 });
 </script>
 
