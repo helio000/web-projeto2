@@ -57,60 +57,56 @@
     </div>
   </form>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("formulario");
+ <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("formulario");
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        const dados = {
-          nome: document.getElementById("nome").value.trim(),
-          email: document.getElementById("email").value.trim().toLowerCase(),
-          telefone: document.getElementById("telefone").value.replace(/\D/g, ""),
-          cpf: document.getElementById("cpf").value.replace(/\D/g, ""),
-          arteMarcial: document.getElementById("arte-marcial").value.trim(),
-          datanasc: document.getElementById("datanasc").value
-        };
+    // CAPTURA DOS DADOS QUE O BACKEND USA
+    const dados = {
+      nome: document.getElementById("nome").value.trim(),
+      email: document.getElementById("email").value.trim().toLowerCase(),
+      telefone: document.getElementById("telefone").value.replace(/\D/g, ""),
+      arteMarcial: document.getElementById("arte-marcial").value.trim()
+    };
 
-        if (!dados.nome || !dados.email || !dados.telefone || !dados.cpf || !dados.arteMarcial || !dados.datanasc) {
-          alert("Preencha todos os campos obrigatórios!");
-          return;
-        }
+    // VALIDAÇÃO
+    if (!dados.nome || !dados.email || !dados.telefone || !dados.arteMarcial) {
+      alert("Preencha todos os campos obrigatórios!");
+      return;
+    }
 
-        if (dados.cpf.length !== 11) {
-          alert("CPF inválido! Digite 11 números.");
-          return;
-        }
-
-        try {
-          const resposta = await fetch("https://back-projeto-2025-12.onrender.com/professores", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(dados)
-          });
-
-          const resultado = await resposta.json();
-
-          if (!resposta.ok) {
-            alert("Erro ao cadastrar professor: " + (resultado.error || "Erro desconhecido"));
-            return;
-          }
-
-          alert("Cadastro realizado com sucesso!");
-          form.reset();
-
-          setTimeout(() => {
-            window.location.href = "LoginProfessor.html";
-          }, 2000);
-
-        } catch (erro) {
-          console.error("Erro ao enviar dados:", erro);
-          alert("Não foi possível conectar com o servidor.");
-        }
+    try {
+      const resposta = await fetch("https://back-projeto-2025-12.onrender.com/professores", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
       });
-    });
-  </script>
+
+      const resultado = await resposta.json();
+
+      if (!resposta.ok) {
+        alert("Erro ao cadastrar professor: " + (resultado.error || "Erro desconhecido"));
+        return;
+      }
+
+      alert("Cadastro realizado com sucesso!");
+      form.reset();
+
+      setTimeout(() => {
+        window.location.href = "LoginProfessor.html";
+      }, 2000);
+
+    } catch (erro) {
+      console.error("Erro ao enviar dados:", erro);
+      alert("Não foi possível conectar com o servidor.");
+    }
+  });
+});
+</script>
+
 </body>
 </html>
 
