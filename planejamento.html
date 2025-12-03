@@ -152,130 +152,130 @@
   <p id="mensagem"></p>
   <button id="voltar">Voltar para a Sala</button>
 
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-  const API = "https://back-projeto-2025-12.onrender.com";
+ <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const tabela = document.querySelector("#tabela tbody");
+      const professor = JSON.parse(localStorage.getItem("professorLogado"));
+      const novoDiv = document.getElementById("novo");
+      const salvarBtn = document.getElementById("salvar");
+      const msg = document.getElementById("mensagem");
+      const professorInfo = document.getElementById("professor-info");
 
-  const tabela = document.querySelector("#tabela tbody");
-  const professor = JSON.parse(localStorage.getItem("professorLogado"));
-  const novoDiv = document.getElementById("novo");
-  const salvarBtn = document.getElementById("salvar");
-  const msg = document.getElementById("mensagem");
-  const professorInfo = document.getElementById("professor-info");
+      if (professor) {
+        novoDiv.style.display = "flex";
+        professorInfo.textContent = `Professor logado: ${professor.nome}`;
+      } else {
+        professorInfo.textContent = "Visualizando como aluno (somente leitura)";
+      }
 
-  if (professor) {
-    novoDiv.style.display = "flex";
-    professorInfo.textContent = `Professor logado: ${professor.nome}`;
-  } else {
-    professorInfo.textContent = "Visualizando como aluno (somente leitura)";
-  }
+      async function carregar() {
+        tabela.innerHTML = "<tr><td colspan='4'>Carregando...</td></tr>";
 
-  async function carregar() {
-    tabela.innerHTML = "<tr><td colspan='4'>Carregando...</td></tr>";
+        const res = await fetch("http://localhost:3100/planejamentos");
+        const planejamentos = await res.json();
 
-    // Buscar planejamentos
-    const res = await fetch(`${API}/planejamentos`);
-    const planejamentos = await res.json();
+        tabela.innerHTML = "";
 
-    // Buscar professores
-    const resProfessores = await fetch(`${API}/professores`);
-    const professores = await resProfessores.json();
-
-    tabela.innerHTML = "";
-    if (planejamentos.length === 0) {
-      tabela.innerHTML = "<tr><td colspan='4'>Nenhuma atividade cadastrada.</td></tr>";
-      return;
-    }
-
-    planejamentos.forEach(p => {
-      const prof = professores.find(pr => pr.id === p.professorId);
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${p.diaSemana}</td>
-        <td>${p.atividade}</td>
-        <td>${prof ? prof.nome : "—"}</td>
-        <td>
-          <button class="editar" data-id="${p.id}" data-prof="${p.professorId}">Editar</button>
-          <button class="excluir" data-id="${p.id}" data-prof="${p.professorId}">Excluir</button>
-        </td>
-      `;
-      tabela.appendChild(tr);
-    });
-
-    // editar
-    document.querySelectorAll(".editar").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        const id = btn.dataset.id;
-        const donoId = parseInt(btn.dataset.prof);
-
-        if (!professor || professor.id !== donoId) {
-          alert("Você não tem permissão para editar esta atividade!");
+        if (planejamentos.length === 0) {
+          tabela.innerHTML = "<tr><td colspan='4'>Nenhuma atividade cadastrada.</td></tr>";
           return;
         }
 
-        const novo = prompt("Nova descrição da atividade:");
-        if (!novo) return;
+        planejamentos.forEach(p => {
+          const tr = document.createElement("tr");
 
-        await fetch(`${API}/planejamentos/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ atividade: novo })
+          tr.innerHTML = `
+            <td>${p.diaSemana}</td>
+            <td>${p.atividade}</td>
+            <td>${p.professor?.nome || "—"}</td>
+            <td>
+              <button class="editar" data-id="${p.id}" data-prof="${p.professorId}" data-dia="${p.diaSemana}">Editar</button>
+              <button class="excluir" data-id="${p.id}" data-prof="${p.professorId}">Excluir</button>
+            </td>
+          `;
+          tabela.appendChild(tr);
         });
 
-        msg.textContent = "Atividade atualizada com sucesso!";
+        // Edição de atividade
+        document.querySelectorAll(".editar").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const id = btn.dataset.id;
+            const donoId = parseInt(btn.dataset.prof);
+            const diaSemana = btn.dataset.dia;
+
+            if (!professor || professor.id !== donoId) {
+              alert("Você não tem permissão para editar esta atividade!");
+              return;
+            }
+
+            const novo = prompt("Nova descrição da atividade:", btn.parentElement.previousElementSibling.textContent);
+            if (!novo) return;
+
+            await fetch(`http://localhost:3100/planejamentos/${id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                atividade: novo,
+                diaSemana,          // manter o dia da semana
+                professorId: donoId // manter o professor
+              })
+            });
+
+            msg.textContent = "Atividade atualizada com sucesso!";
+            carregar();
+          });
+        });
+
+        // Exclusão de atividade
+        document.querySelectorAll(".excluir").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const id = btn.dataset.id;
+            const donoId = parseInt(btn.dataset.prof);
+
+            if (!professor || professor.id !== donoId) {
+              alert("Você não tem permissão para excluir esta atividade!");
+              return;
+            }
+
+            if (!confirm("Deseja excluir esta atividade?")) return;
+
+            await fetch(`http://localhost:3100/planejamentos/${id}`, { method: "DELETE" });
+            msg.textContent = "Atividade excluída com sucesso!";
+            carregar();
+          });
+        });
+      }
+
+      // Adicionar nova atividade
+      salvarBtn.addEventListener("click", async () => {
+        if (!professor) return alert("Somente professores podem adicionar atividades!");
+
+        const diaSemana = document.getElementById("diaSemana").value;
+        const atividade = document.getElementById("atividade").value.trim();
+        if (!atividade) return alert("Descreva a atividade!");
+
+        await fetch("http://localhost:3100/planejamentos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            diaSemana,
+            atividade,
+            professorId: professor.id
+          })
+        });
+
+        msg.textContent = "Atividade adicionada com sucesso!";
+        document.getElementById("atividade").value = "";
         carregar();
       });
-    });
 
-    // excluir
-    document.querySelectorAll(".excluir").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        const id = btn.dataset.id;
-        const donoId = parseInt(btn.dataset.prof);
-
-        if (!professor || professor.id !== donoId) {
-          alert("Você não tem permissão para excluir esta atividade!");
-          return;
-        }
-
-        if (!confirm("Deseja excluir esta atividade?")) return;
-
-        await fetch(`${API}/planejamentos/${id}`, { method: "DELETE" });
-
-        msg.textContent = "Atividade excluída com sucesso!";
-        carregar();
+      // Voltar para sala
+      document.getElementById("voltar").addEventListener("click", () => {
+        window.location.href = "sala.html";
       });
+
+      carregar();
     });
-  }
-
-  // adicionar
-  salvarBtn.addEventListener("click", async () => {
-    const diaSemana = document.getElementById("diaSemana").value;
-    const atividade = document.getElementById("atividade").value;
-    if (!atividade) return alert("Descreva a atividade!");
-
-    await fetch(`${API}/planejamentos`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        diaSemana,
-        atividade,
-        professorId: professor.id
-      })
-    });
-
-    msg.textContent = "Atividade adicionada com sucesso!";
-    document.getElementById("atividade").value = "";
-    carregar();
-  });
-
-  document.getElementById("voltar").addEventListener("click", () => {
-    window.location.href = "sala.html";
-  });
-
-  carregar();
-});
-</script>
-
+  </script>
 </body>
 </html>
