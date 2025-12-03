@@ -39,5 +39,8 @@
         "node": ">= 0.8"
       }
     }
+  },
+  "devDependencies": {
+    "prisma": "^6.16.2"
   }
 }
