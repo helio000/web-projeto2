@@ -173,8 +173,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function carregar() {
     tabela.innerHTML = "<tr><td colspan='4'>Carregando...</td></tr>";
 
+    // Buscar planejamentos
     const res = await fetch(`${API}/planejamentos`);
     const planejamentos = await res.json();
+
+    // Buscar professores
+    const resProfessores = await fetch(`${API}/professores`);
+    const professores = await resProfessores.json();
 
     tabela.innerHTML = "";
     if (planejamentos.length === 0) {
@@ -183,11 +188,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     planejamentos.forEach(p => {
+      const prof = professores.find(pr => pr.id === p.professorId);
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${p.diaSemana}</td>
         <td>${p.atividade}</td>
-        <td>${p.professor?.nome || "—"}</td>
+        <td>${prof ? prof.nome : "—"}</td>
         <td>
           <button class="editar" data-id="${p.id}" data-prof="${p.professorId}">Editar</button>
           <button class="excluir" data-id="${p.id}" data-prof="${p.professorId}">Excluir</button>
