@@ -33,7 +33,7 @@ document.getElementById("entrar").addEventListener("click", async () => {
 
     try {
         // Tenta logar
-        let response = await fetch('http://localhost:3100/alunos/login', {
+        let response = await fetch('https://back-projeto-2025-12.onrender.com/alunos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nome, email })
