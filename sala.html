@@ -9,7 +9,11 @@ html, body { height: 100%; margin: 0; padding: 0; }
 body {
     font-family: Arial, sans-serif;
     color: white;
+
     background-image: url('fundo-principal.png');
+
+    background-image: url('fotos/fundo-principal.png');
+
     background-size: cover;
     background-position: center;
     display: flex;
@@ -100,6 +104,7 @@ fieldset {
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
+
     const listaAlunos = document.getElementById("lista-sala");
     const listaAulas = document.getElementById("lista-aulas");
     const botoes = document.querySelectorAll("#filtros button");
@@ -121,22 +126,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             alunos = await resAlunos.json();
             aulas = await resAulas.json();
 
-            console.log("Alunos recebidos:", alunos); // Log para depuração
-            console.log("Aulas recebidas:", aulas);   // Log para depuração
-
-            // Verificar se alunos e aulas são arrays
             if (Array.isArray(alunos) && Array.isArray(aulas)) {
                 atualizarLista();
                 atualizarAulas();
-            } else {
-                console.error("Dados não são arrays.");
             }
         } catch (err) {
             console.error("Erro ao carregar dados:", err);
         }
     }
 
-    // Função para normalizar texto (remover acentos)
     function normalizar(texto) {
         return texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
     }
@@ -144,11 +142,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function atualizarLista(filtro = "") {
         listaAlunos.innerHTML = "";
 
-        // Verifica se alunos é um array
-        if (!Array.isArray(alunos)) {
-            console.error("Alunos não é um array:", alunos);
-            return;
-        }
+        if (!Array.isArray(alunos)) return;
 
         const filtrados = filtro
             ? alunos.filter(a => normalizar(a.arteMarcial) === normalizar(filtro))
@@ -179,11 +173,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function atualizarAulas(filtro = "") {
         listaAulas.innerHTML = "<legend>Aulas da Semana</legend>";
 
-        // Verifica se aulas é um array
-        if (!Array.isArray(aulas)) {
-            console.error("Aulas não é um array:", aulas);
-            return;
-        }
+        if (!Array.isArray(aulas)) return;
 
         const filtradas = filtro
             ? aulas.filter(a => normalizar(a.professor?.arteMarcial) === normalizar(filtro))
@@ -208,8 +198,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function removerAluno(id) {
         try {
-            const resposta = await fetch(`http://localhost:3100/alunos/${id}`, { method: "DELETE" });
+            const resposta = await fetch(`https://back-projeto-2025-12.onrender.com/alunos/${id}`, {
+                method: "DELETE"
+            });
+
             if (!resposta.ok) throw new Error("Erro ao remover aluno");
+
             alunos = alunos.filter(a => a.id !== id);
             atualizarLista();
         } catch (err) {
@@ -227,7 +221,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     await carregarDados();
-});
+
+}); // FECHAMENTO DO DOMContentLoaded
 </script>
 
 </body>

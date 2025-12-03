@@ -154,6 +154,8 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
+  const API = "https://back-projeto-2025-12.onrender.com";
+
   const tabela = document.querySelector("#tabela tbody");
   const professor = JSON.parse(localStorage.getItem("professorLogado"));
   const novoDiv = document.getElementById("novo");
@@ -171,11 +173,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function carregar() {
     tabela.innerHTML = "<tr><td colspan='4'>Carregando...</td></tr>";
 
-    const res = await fetch("http://localhost:3100/planejamentos");
+    const res = await fetch(`${API}/planejamentos`);
     const planejamentos = await res.json();
 
     tabela.innerHTML = "";
-
     if (planejamentos.length === 0) {
       tabela.innerHTML = "<tr><td colspan='4'>Nenhuma atividade cadastrada.</td></tr>";
       return;
@@ -209,7 +210,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const novo = prompt("Nova descrição da atividade:");
         if (!novo) return;
 
-        await fetch(`http://localhost:3100/planejamentos/${id}`, {
+        await fetch(`${API}/planejamentos/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ atividade: novo })
@@ -233,7 +234,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!confirm("Deseja excluir esta atividade?")) return;
 
-        await fetch(`http://localhost:3100/planejamentos/${id}`, { method: "DELETE" });
+        await fetch(`${API}/planejamentos/${id}`, { method: "DELETE" });
+
         msg.textContent = "Atividade excluída com sucesso!";
         carregar();
       });
@@ -246,7 +248,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const atividade = document.getElementById("atividade").value;
     if (!atividade) return alert("Descreva a atividade!");
 
-    await fetch("http://localhost:3100/planejamentos", {
+    await fetch(`${API}/planejamentos`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
