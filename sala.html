@@ -9,7 +9,7 @@ html, body { height: 100%; margin: 0; padding: 0; }
 body {
     font-family: Arial, sans-serif;
     color: white;
-    background-image: url('fotos/fundoForm2.png');
+    background-image: url('fotos/fundo-principal.png');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -107,8 +107,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     let alunos = [];
     let aulas = [];
 
-    document.getElementById("voltar-home").addEventListener("click", () => {
-        window.location.href = "home.html";
+    document.getElementById("voltar-index.html").addEventListener("click", () => {
+        window.location.href = "index.html";
     });
 
     async function carregarDados() {
@@ -207,16 +207,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     async function removerAluno(id) {
-        try {
-            const resposta = await fetch(`http://localhost:3100/alunos/${id}`, { method: "DELETE" });
-            if (!resposta.ok) throw new Error("Erro ao remover aluno");
-            alunos = alunos.filter(a => a.id !== id);
-            atualizarLista();
-        } catch (err) {
-            console.error(err);
-            alert("Não foi possível remover o aluno.");
-        }
-    }
+       try {
+    const resposta = await fetch(`https://back-projeto-2025-12.onrender.com/alunos/${id}`, {
+        method: "DELETE"
+    });
+
+    if (!resposta.ok) throw new Error("Erro ao remover aluno");
+
+    alunos = alunos.filter(a => a.id !== id);
+    atualizarLista();
+
+} catch (err) {
+    console.error(err);
+    alert("Não foi possível remover o aluno.");
+}
+
 
     botoes.forEach(btn => {
         btn.addEventListener("click", () => {
