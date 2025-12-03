@@ -48,11 +48,12 @@
         }
 
         try {
-          const resposta = await fetch("https://back-projeto-2025-12.onrender.com/professores", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nome, email })
-          });
+       const resposta = await fetch("https://back-projeto-2025-12.onrender.com/professores/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ nome, email })
+});
+
 
           let resultado;
           try { resultado = await resposta.json(); } 
